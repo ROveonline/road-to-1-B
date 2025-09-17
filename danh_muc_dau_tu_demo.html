@@ -1,331 +1,84 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Danh mục đầu tư — Mẫu</title>
-<style>
-:root{
-  --accent:#0f6ebf;
-  --muted:#6b7280;
-  --card:#ffffff;
-  --bg:#f3f6fb;
-  --success:#0b9a4a;
-  --danger:#d32f2f;
-}
-*{box-sizing:border-box}
-body{font-family:Inter, Arial, Helvetica, sans-serif; margin:0; background:var(--bg); color:#111;}
-.header{background:linear-gradient(90deg,var(--accent),#0b63a8); color:#fff; padding:22px 16px;}
-.header .inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;}
-.brand{font-weight:700;font-size:18px;letter-spacing:0.4px;}
-.nav{display:flex;gap:12px;}
-.nav a{color:rgba(255,255,255,0.9);text-decoration:none;padding:8px 10px;border-radius:6px;font-size:14px;}
-.container{max-width:1200px;margin:20px auto;padding:0 16px;}
-.hero{background:var(--card);padding:18px;border-radius:10px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;}
-.title{font-size:20px;font-weight:700;color:#0b3b5d;}
-.meta{color:var(--muted);font-size:13px;}
-.stats{display:flex;gap:12px;flex-wrap:wrap;}
-.stat{background:#f8fbff;border:1px solid #e6f0ff;padding:12px;border-radius:8px;min-width:160px;text-align:center;}
-.stat .big{font-weight:700;font-size:18px;color:#0b3b5d;}
-.controls{display:flex;gap:8px;align-items:center;}
-.btn{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;border:none;cursor:pointer;}
-.btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(11,59,93,0.08);}
-.card{background:var(--card);padding:12px;border-radius:10px;margin-top:16px;border:1px solid #eceff4;}
-.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.table{width:100%;border-collapse:collapse;background:var(--card);}
-.table th,.table td{padding:10px;border-bottom:1px solid #eef2f6;text-align:center;font-size:14px;}
-.table thead th{background:#f7fbff;color:#0b3b5d;font-weight:700;}
-.input-num{width:120px;padding:6px;border:1px solid #e6eef8;border-radius:6px;text-align:right;}
-.row-actions button{margin-left:6px;padding:6px 8px;border-radius:6px;border:1px solid #ddd;background:#fff;cursor:pointer;}
-.small-muted{font-size:13px;color:var(--muted);}
-.footer{max-width:1200px;margin:30px auto;padding:20px 16px;color:var(--muted);font-size:13px;text-align:center;}
-@media(max-width:800px){
-  .hero{flex-direction:column;align-items:flex-start}
-  .nav{display:none}
-  .stat{min-width:140px}
-  .input-num{width:100px}
-}
-.lock-overlay{position:fixed;left:0;top:0;right:0;bottom:0;background:rgba(0,0,0,0.35);display:none;align-items:center;justify-content:center;z-index:60}
-.lock-box{background:#fff;padding:18px;border-radius:10px;max-width:420px;width:90%}
-.notice{padding:8px;border-radius:8px;background:#fff4e5;border:1px solid #ffe0b2;color:#8a5b00;margin-bottom:10px}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Danh mục đầu tư - Demo LocalStorage</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+  <style>
+    body {padding:20px;background:#f8f9fa}
+    h1 {margin-bottom:20px;}
+    table input {min-width:90px;}
+  </style>
 </head>
 <body>
-<header class="header">
-  <div class="inner">
-    <div class="brand">Portfolio — Mẫu</div>
-    <nav class="nav">
-      <a href="#">Trang chủ</a><a href="#">Báo cáo</a><a href="#">Giới thiệu</a>
-    </nav>
-    <div class="controls">
-      <button class="btn ghost" id="btnToggleEdit">Bật chỉnh sửa</button>
-      <button class="btn" id="btnAddRow">Thêm mã</button>
-    </div>
-  </div>
-</header>
-
-<main class="container">
-  <section class="hero card">
-    <div>
-      <div class="title">Danh mục đầu tư — Tháng 09/2025</div>
-      <div class="meta">Dữ liệu mẫu, ngày cập nhật: <strong id="updatedAt">2025-09-10</strong></div>
-    </div>
-    <div class="stats">
-      <div class="stat"><div class="small-muted">TỔNG GIÁ TRỊ</div><div class="big" id="totalValue">0</div></div>
-      <div class="stat"><div class="small-muted">TỔNG ĐÃ ĐẦU TƯ</div><div class="big" id="totalInvested">0</div></div>
-      <div class="stat"><div class="small-muted">TỔNG LÃI/LỖ</div><div class="big" id="totalProfit">0</div></div>
-    </div>
-  </section>
-
-  <section class="card" id="section-stocks">
-    <div class="section-title">
-      <div><strong>Chứng khoán</strong> <span class="small-muted"> (Mã, số lượng, giá mua, giá hiện tại)</span></div>
-      <div class="small-muted">Số mã: <span id="countStocks">0</span></div>
-    </div>
-    <table class="table" id="table-stocks">
-      <thead>
-        <tr><th>Mã</th><th>Số lượng</th><th>Giá mua</th><th>Giá hiện tại</th><th>Giá trị</th><th>Lãi/Lỗ</th><th>%</th><th>Hành động</th></tr>
-      </thead>
-      <tbody>
-        <!-- rows injected by JS -->
-      </tbody>
-    </table>
-    <div class="small-muted" style="margin-top:8px">Ghi chú: Giá tính theo đơn vị VND (hoặc USD nếu ghi rõ).</div>
-  </section>
-<thead>
-  <tr>
-    <th>Mã</th>
-    <th>Số lượng</th>
-    <th>Giá mua</th>
-    <th>Giá hiện tại</th>
-    <th>Ngày vào lệnh</th>   <!-- ➕ cột mới -->
-    <th>Giá trị</th>
-    <th>Lãi/Lỗ</th>
-    <th>%</th>
-    <th>Hành động</th>
-  </tr>
-</thead>
-<tbody id="stockBody"></tbody>
-<tfoot>
-  <tr>
-    <td colspan="9">
-      <button id="addStockBtn" class="btn btn-sm btn-primary">➕ Thêm mã</button>
-    </td>
-  </tr>
-</tfoot>
-
-  <section class="card" id="section-crypto">
-    <div class="section-title">
-      <div><strong>Crypto</strong> <span class="small-muted">(Hỗ trợ fetch giá tự động từ CoinGecko)</span></div>
-      <div class="small-muted">Số mã: <span id="countCrypto">0</span></div>
-    </div>
-    <table class="table" id="table-crypto">
-      <thead>
-        <tr><th>Coin</th><th>Số lượng</th><th>Giá mua (USD)</th><th>Giá hiện tại (USD)</th><th>Giá trị (USD)</th><th>Lãi/Lỗ (USD)</th><th>%</th><th>Hành động</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <div style="margin-top:10px">
-      <button class="btn ghost" id="btnFetchCrypto">Cập nhật giá crypto tự động</button>
-    </div>
-  </section>
-</main>
-<tfoot>
-  <tr>
-    <td colspan="9">
-      <button id="addCryptoBtn" class="btn btn-sm btn-primary">➕ Thêm coin</button>
-    </td>
-  </tr>
-</tfoot>
-
-<footer class="footer">© Mẫu danh mục đầu tư — chỉnh sửa bằng commit trên GitHub để cập nhật vĩnh viễn.</footer>
-
-<!-- lock/edit password modal -->
-<div class="lock-overlay" id="lockOverlay">
-  <div class="lock-box">
-    <div class="notice">Chú ý: cơ chế 'Bật chỉnh sửa' dùng mật khẩu client-side (không an toàn để bảo mật cao). Để hạn chế người khác sửa nội dung chính thức, hãy cập nhật file trong repository.</div>
-    <div style="margin-bottom:10px"><label>Mật khẩu chủ page: <input id="adminPass" type="password" style="padding:8px;border:1px solid #ddd;border-radius:6px;width:100%"></label></div>
-    <div style="text-align:right"><button class="btn" id="unlockBtn">Xác nhận</button></div>
-  </div>
-</div>
+  <h1>Danh mục đầu tư</h1>
+  <button id="addRow" class="btn btn-primary mb-3">➕ Thêm mã</button>
+  <table class="table table-bordered table-sm align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Mã</th>
+        <th>Số lượng</th>
+        <th>Giá mua</th>
+        <th>Giá hiện tại</th>
+        <th>Ngày vào lệnh</th>
+        <th>Giá trị</th>
+        <th>Lãi/Lỗ</th>
+        <th>Hành động</th>
+      </tr>
+    </thead>
+    <tbody id="rows"></tbody>
+  </table>
 
 <script>
-// demo data (you can replace these rows by editing file in repo)
-const demoStocks = [
-  {code:'VNM', qty:2350, buy:58000, now:60300},
-  {code:'SSI', qty:2215, buy:40000, now:42000},
-  {code:'MWG', qty:300, buy:38000, now:36000},
-];
-const demoCrypto = [
-  {code:'bitcoin', symbol:'BTC', qty:0.5, buy:58000, now:61000},
-  {code:'ethereum', symbol:'ETH', qty:2, buy:3000, now:3100},
-];
+const rowsEl = document.getElementById('rows');
+let data = JSON.parse(localStorage.getItem('portfolio') || '[]');
 
-// client-side "password" for enabling edit (NOT secure — change as you wish)
-const OWNER_PASSWORD = 'Qaqaqa12@'; // <-- đổi mật khẩu này thành mật khẩu bạn muốn
-
-let isEditEnabled = false;
-
-function formatNum(v, currency){
-  if(currency==='USD') return Number(v).toLocaleString('en-US',{maximumFractionDigits:2});
-  return Number(v).toLocaleString('vi-VN',{maximumFractionDigits:0});
+function format(v){
+  return Number(v||0).toLocaleString('vi-VN');
 }
-
-function calcRow(stock, isCrypto=false){
-  const now = Number(stock.now)||0;
-  const buy = Number(stock.buy)||0;
-  const qty = Number(stock.qty)||0;
-  const value = now * qty;
-  const profit = (now - buy) * qty;
-  const pct = buy>0 ? (profit/(buy*qty))*100 : 0;
-  return {value, profit, pct};
-}
-
-function renderStocks(){
-  const tbody = document.querySelector('#table-stocks tbody');
-  tbody.innerHTML = '';
-  demoStocks.forEach((s, idx)=>{
-    const res = calcRow(s);
+function render(){
+  rowsEl.innerHTML = '';
+  data.forEach((r,i)=>{
+    const value = (r.qty*r.current);
+    const profit = value - (r.qty*r.buy);
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${s.code}</td>
-      <td><input class="input-num" data-idx="${idx}" data-type="qty" value="${s.qty}" ${isEditEnabled?'':'disabled'}></td>
-      <td><input class="input-num" data-idx="${idx}" data-type="buy" value="${s.buy}" ${isEditEnabled?'':'disabled'}></td>
-      <td><input class="input-num" data-idx="${idx}" data-type="now" value="${s.now}" ${isEditEnabled?'':'disabled'}></td>
-      <td class="value">${formatNum(res.value)}</td>
-      <td class="profit ${res.profit>=0?'lai':'lo'}">${formatNum(res.profit)}</td>
-      <td class="pct ${res.profit>=0?'lai':'lo'}">${res.pct.toFixed(2)}%</td>
-      <td class="row-actions"><button data-idx="${idx}" class="btn ghost delStock" ${isEditEnabled?'':'disabled'}>Xóa</button></td>
+      <td><input class="form-control code" data-i="${i}" value="${r.code||''}"></td>
+      <td><input type="number" class="form-control qty" data-i="${i}" value="${r.qty||0}"></td>
+      <td><input type="number" class="form-control buy" data-i="${i}" value="${r.buy||0}"></td>
+      <td><input type="number" class="form-control current" data-i="${i}" value="${r.current||0}"></td>
+      <td><input type="date" class="form-control date" data-i="${i}" value="${r.date||''}"></td>
+      <td>${format(value)}</td>
+      <td class="${profit>=0?'text-success':'text-danger'}">${format(profit)}</td>
+      <td><button class="btn btn-sm btn-danger delete" data-i="${i}">Xóa</button></td>
     `;
-    tbody.appendChild(tr);
+    rowsEl.appendChild(tr);
   });
-  document.getElementById('countStocks').textContent = demoStocks.length;
-  attachStockListeners();
-  updateTotals();
+  save();
 }
-
-function renderCrypto(){
-  const tbody = document.querySelector('#table-crypto tbody');
-  tbody.innerHTML = '';
-  demoCrypto.forEach((c, idx)=>{
-    const res = calcRow(c, true);
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${c.symbol}</td>
-      <td><input class="input-num" data-idx="${idx}" data-type="qty" value="${c.qty}" ${isEditEnabled?'':'disabled'}></td>
-      <td><input class="input-num" data-idx="${idx}" data-type="buy" value="${c.buy}" ${isEditEnabled?'':'disabled'}></td>
-      <td><input class="input-num" data-idx="${idx}" data-type="now" value="${c.now}" ${isEditEnabled?'':'disabled'}></td>
-      <td class="value">${formatNum(res.value,'USD')}</td>
-      <td class="profit ${res.profit>=0?'lai':'lo'}">${formatNum(res.profit,'USD')}</td>
-      <td class="pct ${res.profit>=0?'lai':'lo'}">${res.pct.toFixed(2)}%</td>
-      <td class="row-actions"><button data-idx="${idx}" class="btn ghost delCrypto" ${isEditEnabled?'':'disabled'}>Xóa</button></td>
-    `;
-    tbody.appendChild(tr);
-  });
-  document.getElementById('countCrypto').textContent = demoCrypto.length;
-  attachCryptoListeners();
-  updateTotals();
+function save(){
+  localStorage.setItem('portfolio', JSON.stringify(data));
 }
-
-function updateTotals(){
-  let totalVal=0, totalInvest=0, totalProfit=0;
-  demoStocks.forEach(s=>{ totalVal += Number(s.now)*Number(s.qty); totalInvest += Number(s.buy)*Number(s.qty); totalProfit += (Number(s.now)-Number(s.buy))*Number(s.qty); });
-  demoCrypto.forEach(c=>{ totalVal += Number(c.now)*Number(c.qty); totalInvest += Number(c.buy)*Number(c.qty); totalProfit += (Number(c.now)-Number(c.buy))*Number(c.qty); });
-  document.getElementById('totalValue').textContent = formatNum(totalVal);
-  document.getElementById('totalInvested').textContent = formatNum(totalInvest);
-  const tp = document.getElementById('totalProfit');
-  tp.textContent = formatNum(totalProfit);
-  tp.className = totalProfit>=0?'big lai':'big lo';
-}
-
-function attachStockListeners(){
-  document.querySelectorAll('#table-stocks input').forEach(inp=>{
-    inp.oninput = function(e){
-      const i = Number(this.dataset.idx);
-      const t = this.dataset.type;
-      demoStocks[i][t] = this.value;
-      renderStocks();
-    }
-  });
-  document.querySelectorAll('.delStock').forEach(btn=>btn.onclick=function(){
-    const i = Number(this.dataset.idx);
-    if(confirm('Xóa mã này?')) { demoStocks.splice(i,1); renderStocks(); }
-  });
-}
-
-function attachCryptoListeners(){
-  document.querySelectorAll('#table-crypto input').forEach(inp=>{
-    inp.oninput = function(e){
-      const i = Number(this.dataset.idx);
-      const t = this.dataset.type;
-      demoCrypto[i][t] = this.value;
-      renderCrypto();
-    }
-  });
-  document.querySelectorAll('.delCrypto').forEach(btn=>btn.onclick=function(){
-    const i = Number(this.dataset.idx);
-    if(confirm('Xóa coin này?')) { demoCrypto.splice(i,1); renderCrypto(); }
-  });
-}
-
-// add row handlers
-document.getElementById('btnAddRow').onclick = function(){
-  if(!isEditEnabled){ alert('Chỉ chủ page mới có thể thêm. Bật chỉnh sửa trước.'); return; }
-  const type = prompt('Thêm "stock" hay "crypto"? (gõ stock hoặc crypto)');
-  if(type==='stock'){
-    const code = prompt('Mã cổ phiếu (ví dụ VNM):');
-    demoStocks.push({code:code||'NEW', qty:0, buy:0, now:0});
-    renderStocks();
-  } else if(type==='crypto'){
-    const sym = prompt('Ký hiệu coin (ví dụ BTC):');
-    demoCrypto.push({code:(sym||'NEW').toLowerCase(), symbol:sym||'NEW', qty:0, buy:0, now:0});
-    renderCrypto();
-  }
-}
-
-// crypto fetch (CoinGecko simple example)
-document.getElementById('btnFetchCrypto').onclick = async function(){
-  // map demoCrypto codes to CoinGecko ids (simple approach: use stored code field)
-  const ids = demoCrypto.map(c=>c.code).join(',');
-  if(!ids) { alert('Không có coin để cập nhật'); return; }
-  try{
-    this.textContent = 'Đang cập nhật...'; this.disabled = true;
-    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids='+ids+'&vs_currencies=usd');
-    const data = await res.json();
-    demoCrypto.forEach(c=>{
-      if(data[c.code] && data[c.code].usd) c.now = data[c.code].usd;
-    });
-    renderCrypto();
-  }catch(err){ alert('Lấy giá thất bại.'); console.error(err); }
-  this.textContent = 'Cập nhật giá crypto tự động'; this.disabled = false;
-}
-
-// edit toggle + simple password modal
-const lockOverlay = document.getElementById('lockOverlay');
-document.getElementById('btnToggleEdit').onclick = function(){
-  if(isEditEnabled){ // turn off
-    isEditEnabled = false;
-    this.textContent = 'Bật chỉnh sửa';
-    renderStocks(); renderCrypto();
-    return;
-  }
-  lockOverlay.style.display = 'flex';
+document.getElementById('addRow').onclick = ()=>{
+  data.push({code:'', qty:0, buy:0, current:0, date:''});
+  render();
 };
-document.getElementById('unlockBtn').onclick = function(){
-  const pass = document.getElementById('adminPass').value || '';
-  if(pass === OWNER_PASSWORD){
-    isEditEnabled = true;
-    lockOverlay.style.display = 'none';
-    document.getElementById('btnToggleEdit').textContent = 'Tắt chỉnh sửa';
-    renderStocks(); renderCrypto();
-  } else {
-    alert('Sai mật khẩu.');
+rowsEl.addEventListener('input', e=>{
+  const i = e.target.dataset.i;
+  if(i!==undefined){
+    const cls = e.target.classList[1]; // code/qty/buy/current/date
+    data[i][cls] = e.target.value;
+    render();
   }
-}
-
-// initial render
-renderStocks();
-renderCrypto();
+});
+rowsEl.addEventListener('click', e=>{
+  if(e.target.classList.contains('delete')){
+    data.splice(e.target.dataset.i,1);
+    render();
+  }
+});
+render();
 </script>
 </body>
 </html>
