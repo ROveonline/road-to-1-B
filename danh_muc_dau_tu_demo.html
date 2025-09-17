@@ -92,6 +92,27 @@ body{font-family:Inter, Arial, Helvetica, sans-serif; margin:0; background:var(-
     </table>
     <div class="small-muted" style="margin-top:8px">Ghi chú: Giá tính theo đơn vị VND (hoặc USD nếu ghi rõ).</div>
   </section>
+<thead>
+  <tr>
+    <th>Mã</th>
+    <th>Số lượng</th>
+    <th>Giá mua</th>
+    <th>Giá hiện tại</th>
+    <th>Ngày vào lệnh</th>   <!-- ➕ cột mới -->
+    <th>Giá trị</th>
+    <th>Lãi/Lỗ</th>
+    <th>%</th>
+    <th>Hành động</th>
+  </tr>
+</thead>
+<tbody id="stockBody"></tbody>
+<tfoot>
+  <tr>
+    <td colspan="9">
+      <button id="addStockBtn" class="btn btn-sm btn-primary">➕ Thêm mã</button>
+    </td>
+  </tr>
+</tfoot>
 
   <section class="card" id="section-crypto">
     <div class="section-title">
@@ -109,6 +130,13 @@ body{font-family:Inter, Arial, Helvetica, sans-serif; margin:0; background:var(-
     </div>
   </section>
 </main>
+<tfoot>
+  <tr>
+    <td colspan="9">
+      <button id="addCryptoBtn" class="btn btn-sm btn-primary">➕ Thêm coin</button>
+    </td>
+  </tr>
+</tfoot>
 
 <footer class="footer">© Mẫu danh mục đầu tư — chỉnh sửa bằng commit trên GitHub để cập nhật vĩnh viễn.</footer>
 
