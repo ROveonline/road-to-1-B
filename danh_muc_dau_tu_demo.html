@@ -1,83 +1,182 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Danh mục đầu tư - Demo LocalStorage</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
-  <style>
-    body {padding:20px;background:#f8f9fa}
-    h1 {margin-bottom:20px;}
-    table input {min-width:90px;}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Danh Mục Đầu Tư - Demo</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+body{background:#f4f6f8}
+.navbar-brand{font-weight:600}
+.section-box{background:#fff;border-radius:8px;padding:20px;margin-bottom:20px;box-shadow:0 1px 3px rgba(0,0,0,0.1);}
+.table input{min-width:90px;}
+.value-pos{color:green;font-weight:600}
+.value-neg{color:red;font-weight:600}
+</style>
 </head>
 <body>
-  <h1>Danh mục đầu tư</h1>
-  <button id="addRow" class="btn btn-primary mb-3">➕ Thêm mã</button>
-  <table class="table table-bordered table-sm align-middle">
-    <thead class="table-light">
-      <tr>
-        <th>Mã</th>
-        <th>Số lượng</th>
-        <th>Giá mua</th>
-        <th>Giá hiện tại</th>
-        <th>Ngày vào lệnh</th>
-        <th>Giá trị</th>
-        <th>Lãi/Lỗ</th>
-        <th>Hành động</th>
-      </tr>
-    </thead>
-    <tbody id="rows"></tbody>
-  </table>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+  <div class="container">
+    <a class="navbar-brand" href="#">Danh Mục Đầu Tư - Demo</a>
+    <div class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="#">Trang chủ</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Định hướng</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Chia sẻ</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Giới thiệu</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- Tổng quan -->
+  <div class="section-box text-center">
+    <div class="row">
+      <div class="col-md-4">
+        <h4 id="tong-gia-tri">0</h4><small>Tổng Giá Trị</small>
+      </div>
+      <div class="col-md-4">
+        <h4 id="bo-sung">0</h4><small>Bổ Sung</small>
+      </div>
+      <div class="col-md-4">
+        <h4 id="loi-nhuan">0</h4><small>Lợi Nhuận</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chứng khoán -->
+  <div class="section-box">
+    <div class="d-flex justify-content-between mb-2">
+      <h5>Chứng Khoán</h5>
+      <button id="addStock" class="btn btn-sm btn-primary">➕ Thêm mã</button>
+    </div>
+    <table class="table table-bordered table-sm align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Mã CP</th>
+          <th>Số lượng</th>
+          <th>Giá mua</th>
+          <th>Giá hiện tại</th>
+          <th>Ngày vào lệnh</th>
+          <th>Giá trị</th>
+          <th>Lãi/Lỗ</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody id="stockBody"></tbody>
+    </table>
+  </div>
+
+  <!-- Crypto -->
+  <div class="section-box">
+    <div class="d-flex justify-content-between mb-2">
+      <h5>Crypto</h5>
+      <button id="addCrypto" class="btn btn-sm btn-primary">➕ Thêm coin</button>
+    </div>
+    <table class="table table-bordered table-sm align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Coin</th>
+          <th>Số lượng</th>
+          <th>Giá mua (USD)</th>
+          <th>Giá hiện tại (USD)</th>
+          <th>Ngày vào lệnh</th>
+          <th>Giá trị (USD)</th>
+          <th>Lãi/Lỗ (USD)</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody id="cryptoBody"></tbody>
+    </table>
+  </div>
+
+</div>
 
 <script>
-const rowsEl = document.getElementById('rows');
-let data = JSON.parse(localStorage.getItem('portfolio') || '[]');
+const stockBody = document.getElementById('stockBody');
+const cryptoBody = document.getElementById('cryptoBody');
+let data = JSON.parse(localStorage.getItem('dm_invest')||'{"stocks":[],"cryptos":[]}');
 
-function format(v){
-  return Number(v||0).toLocaleString('vi-VN');
-}
+function format(n){return Number(n||0).toLocaleString('vi-VN');}
+function calcValue(q,p){return Number(q||0)*Number(p||0);}
+
 function render(){
-  rowsEl.innerHTML = '';
-  data.forEach((r,i)=>{
-    const value = (r.qty*r.current);
-    const profit = value - (r.qty*r.buy);
+  stockBody.innerHTML='';
+  cryptoBody.innerHTML='';
+  let tong=0, goc=0;
+
+  data.stocks.forEach((r,i)=>{
+    const val = calcValue(r.qty,r.price);
+    const profit = val - calcValue(r.qty,r.buy);
+    tong += val; goc += calcValue(r.qty,r.buy);
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td><input class="form-control code" data-i="${i}" value="${r.code||''}"></td>
-      <td><input type="number" class="form-control qty" data-i="${i}" value="${r.qty||0}"></td>
-      <td><input type="number" class="form-control buy" data-i="${i}" value="${r.buy||0}"></td>
-      <td><input type="number" class="form-control current" data-i="${i}" value="${r.current||0}"></td>
-      <td><input type="date" class="form-control date" data-i="${i}" value="${r.date||''}"></td>
-      <td>${format(value)}</td>
-      <td class="${profit>=0?'text-success':'text-danger'}">${format(profit)}</td>
-      <td><button class="btn btn-sm btn-danger delete" data-i="${i}">Xóa</button></td>
+      <td><input class="form-control code" data-type="stocks" data-i="${i}" value="${r.code}"></td>
+      <td><input type="number" class="form-control qty" data-type="stocks" data-i="${i}" value="${r.qty}"></td>
+      <td><input type="number" class="form-control buy" data-type="stocks" data-i="${i}" value="${r.buy}"></td>
+      <td><input type="number" class="form-control price" data-type="stocks" data-i="${i}" value="${r.price}"></td>
+      <td><input type="date" class="form-control date" data-type="stocks" data-i="${i}" value="${r.date||''}"></td>
+      <td>${format(val)}</td>
+      <td class="${profit>=0?'value-pos':'value-neg'}">${format(profit)}</td>
+      <td><button class="btn btn-sm btn-danger delete" data-type="stocks" data-i="${i}">Xóa</button></td>
     `;
-    rowsEl.appendChild(tr);
+    stockBody.appendChild(tr);
   });
-  save();
+
+  data.cryptos.forEach((r,i)=>{
+    const val = calcValue(r.qty,r.price);
+    const profit = val - calcValue(r.qty,r.buy);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input class="form-control code" data-type="cryptos" data-i="${i}" value="${r.code}"></td>
+      <td><input type="number" class="form-control qty" data-type="cryptos" data-i="${i}" value="${r.qty}"></td>
+      <td><input type="number" class="form-control buy" data-type="cryptos" data-i="${i}" value="${r.buy}"></td>
+      <td><input type="number" class="form-control price" data-type="cryptos" data-i="${i}" value="${r.price}"></td>
+      <td><input type="date" class="form-control date" data-type="cryptos" data-i="${i}" value="${r.date||''}"></td>
+      <td>${format(val)}</td>
+      <td class="${profit>=0?'value-pos':'value-neg'}">${format(profit)}</td>
+      <td><button class="btn btn-sm btn-danger delete" data-type="cryptos" data-i="${i}">Xóa</button></td>
+    `;
+    cryptoBody.appendChild(tr);
+  });
+
+  document.getElementById('tong-gia-tri').innerText = format(tong);
+  document.getElementById('bo-sung').innerText = format(goc);
+  document.getElementById('loi-nhuan').innerText = format(tong-goc);
+
+  localStorage.setItem('dm_invest', JSON.stringify(data));
 }
-function save(){
-  localStorage.setItem('portfolio', JSON.stringify(data));
-}
-document.getElementById('addRow').onclick = ()=>{
-  data.push({code:'', qty:0, buy:0, current:0, date:''});
+
+function addRow(type){
+  data[type].push({code:'',qty:0,buy:0,price:0,date:''});
   render();
-};
-rowsEl.addEventListener('input', e=>{
-  const i = e.target.dataset.i;
-  if(i!==undefined){
-    const cls = e.target.classList[1]; // code/qty/buy/current/date
-    data[i][cls] = e.target.value;
+}
+
+document.getElementById('addStock').onclick=()=>addRow('stocks');
+document.getElementById('addCrypto').onclick=()=>addRow('cryptos');
+
+document.addEventListener('input', e=>{
+  const el=e.target;
+  if(el.dataset.i!==undefined){
+    const t=el.dataset.type;
+    const i=el.dataset.i;
+    const cls=el.classList[1];
+    data[t][i][cls]=el.value;
     render();
   }
 });
-rowsEl.addEventListener('click', e=>{
+
+document.addEventListener('click', e=>{
   if(e.target.classList.contains('delete')){
-    data.splice(e.target.dataset.i,1);
+    const t=e.target.dataset.type;
+    const i=e.target.dataset.i;
+    data[t].splice(i,1);
     render();
   }
 });
+
 render();
 </script>
 </body>
